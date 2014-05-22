@@ -1,0 +1,4 @@
+PyRTS
+=====
+
+Python RTS engine
