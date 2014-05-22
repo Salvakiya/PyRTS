@@ -2,6 +2,7 @@ __author__ = 'Salvakiya'
 import configparser
 import glob
 import os
+import traitfile
 
 
 def printred(string):
@@ -11,6 +12,9 @@ def printred(string):
 def printgrn(string):
     print("\033[1;36m{0}\033[00m".format(string))
 
+
+blue_print_instances = {}
+actor_instances =   {}
 
 #retrieve which mod we are currently using
 config = configparser.RawConfigParser()
@@ -43,8 +47,43 @@ def load_file_list(file_type):
 
 
 def load_assets():
-    actor_file_list = load_file_list(".ini")
-    print(actor_file_list)
+        actor_file_list = load_file_list(".ini")
+        templates = {}
+        for file in actor_file_list:
+            config = configparser.RawConfigParser()
+            config.read(file)
+            if config.has_option("General", "Name"):
+
+                name = config.get("General", "Name")
+                printgrn("Loading: "+name)
+                trait_list = []
+                for trait in config.sections():
+                    if hasattr(traitfile, trait):
+                        templates[name] = trait_list.append(trait)
+                        printgrn("Trait "+trait+" loaded!")
+                    else:
+                        printred("Trait "+trait+" does not exist?")
 
 
-load_assets()
+                templates[name] = BluePrintClass(templates)
+                printgrn(name+": Complete!")
+            else:
+                printred("Error, Missing General Trait For "+file)
+
+        print(actor_file_list)
+        return templates
+
+
+class AssetLoader():
+    def __init__(self):
+        template_list = load_assets()
+        printgrn(template_list)
+
+
+class BluePrintClass:
+    def __init__(self, trait_list):
+        return
+
+
+
+AssetLoader()
