@@ -5,12 +5,10 @@ import os
 import traitfile
 
 
-def printred(string):
-    print("\033[01;31m{0}\033[00m".format(string))
-
-
-def printgrn(string):
-    print("\033[1;36m{0}\033[00m".format(string))
+def printcol(col, string):
+    print( {"r": "\033[01;31m{0}\033[00m",
+            "y": "\033[1;33m{0}\033[00m",
+            "g": "\033[1;36m{0}\033[00m"}[col].format(string))
 
 
 blue_print_instances = {}
@@ -18,18 +16,18 @@ actor_instances =   {}
 
 #retrieve which mod we are currently using
 config = configparser.RawConfigParser()
-if os.path.isfile("Settings.ini"):
-    config.read("Settings.ini")
+if os.path.isfile("settings.ini"):
+    config.read("settings.ini")
     GAME_MOD = config.get("Options", "mod")
 else:
-    printred("Cannot find Settings.ini!")
+    printcol("r", "Cannot find settings.ini!")
 
 
-#load a list of files of given type from Assets.txt
+#load a list of files of given type from assets.txt
 def load_file_list(file_type):
 
     path = "mods/"+GAME_MOD+"/"
-    file_object = open(path+"Assets.txt", 'r')
+    file_object = open(path+"assets.txt", 'r')
     directory_list = []
 
     for directory in file_object.readlines():
@@ -39,7 +37,7 @@ def load_file_list(file_type):
 
     file_list = []
     for directory in directory_list:
-        printgrn(directory+"/*"+file_type)
+        printcol("g", directory+"/*"+file_type)
         files = glob.glob(directory+"/*"+file_type)
         file_list.extend(files)
 
@@ -55,29 +53,27 @@ def load_assets():
             if config.has_option("General", "Name"):
 
                 name = config.get("General", "Name")
-                printgrn("Loading: "+name)
+                printcol("g","Loading: "+name)
                 trait_list = []
                 for trait in config.sections():
                     if hasattr(traitfile, trait):
                         templates[name] = trait_list.append(trait)
-                        printgrn("Trait "+trait+" loaded!")
+                        printcol("g","Trait "+trait+" loaded!")
                     else:
-                        printred("Trait "+trait+" does not exist?")
+                        printcol("y","Trait "+trait+" does not exist?")
 
 
                 templates[name] = BluePrintClass(templates)
-                printgrn(name+": Complete!")
+                printcol("g", name+": Complete!")
             else:
-                printred("Error, Missing General Trait For "+file)
-
-        print(actor_file_list)
+                printcol("r", "Error, Missing General Trait For "+file)
         return templates
 
 
 class AssetLoader():
     def __init__(self):
         template_list = load_assets()
-        printgrn(template_list)
+        printcol("g", template_list)
 
 
 class BluePrintClass:
